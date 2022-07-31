@@ -1,0 +1,2 @@
+一:Cantonese,一,yat;Japanese,一,ichi;Korean,일,il;Mandarin,一,yi;Minnan,一,ik;Thai,เอ็ด,et:one
+二:Cantonese,二,yi;Japanese,二,ni;Korean,이,i;Mandarin,二,er;Minnan,二,ri;Thai,ยี่,yi:two
