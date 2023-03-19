@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -7,8 +6,8 @@ public class ReadFile {
     private Scanner sc;
     private File file;
 
-    public ReadFile(File f) {
-        file = f;
+    public ReadFile(String f) {
+        file = new File(f);
         try {
             sc = new Scanner(file, "UTF-8");
         } catch(Exception e) {
@@ -29,13 +28,11 @@ public class ReadFile {
         }
     }
 
-    public ArrayList<String> getTokens() {
-        ArrayList<String> list = new ArrayList<String>();
-
-        sc.useDelimiter(",");
-        while(sc.hasNext()) {
-            list.add(sc.next());
-            System.out.println("PRINTING");
+    public ArrayList<String[]> getTokens() {
+        ArrayList<String[]> list = new ArrayList<String[]>();
+        
+        while(sc.hasNextLine()) {
+            list.add(sc.nextLine().split(","));
         }
 
         try {

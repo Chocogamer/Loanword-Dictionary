@@ -1,15 +1,11 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.IOError;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.io.File;
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-public class GUI implements ActionListener {
+public class GUI implements ActionListener, ListSelectionListener {
 
     // Private Fields
     private final Color BLUETHEME = new Color(25, 230, 175);
@@ -24,6 +20,7 @@ public class GUI implements ActionListener {
 
     private StartJPanel startPanel;
     private HomeJPanel homePanel;
+    private WordPanel wordPanel;
 
     // Default Constructor
     public GUI() {
@@ -62,6 +59,13 @@ public class GUI implements ActionListener {
         homePanel.setName("homePanel");
         frameContainer.add(homePanel, "homePanel");
 
+        homePanel.queryList.addListSelectionListener(this);
+
+        // word panel
+        wordPanel = new WordPanel();
+        wordPanel.setName("wordPanel");
+        frameContainer.add(wordPanel, "wordPanel");
+
         frame.setVisible(true);
     }
 
@@ -77,6 +81,12 @@ public class GUI implements ActionListener {
         if(e == startPanel.button) {
             cardLayout.show(frameContainer, "homePanel");
         } 
+    }
+
+    // ListSelectionListener
+    public void valueChanged(ListSelectionEvent event) {
+        Object e = event.getSource();
+        System.out.println(homePanel.queryList.getSelectedValue());
     }
 
     // StartJPanel Class
@@ -149,26 +159,77 @@ public class GUI implements ActionListener {
             goButton.setPreferredSize(new Dimension(100, 50));
             topPanel.add(goButton);
 
-            // bottom panel
+            // center panel
             centerPanel = new JPanel();
             centerPanel.setBackground(BLUETHEME);
             this.add(centerPanel, BorderLayout.CENTER);
 
-            //queryList = new JList(
+            // organized List of tokens
+            ReadFile rf = new ReadFile("LoanwordEntries.csv");
+            ArrayList<String[]> organizedTokens = new ArrayList<String[]>();
+            organizedTokens = rf.getTokens();
 
-            JTextArea ta = new JTextArea();
-            ta.setPreferredSize(new Dimension(600, 600));
-            centerPanel.add(ta);
+            // words
+            Word[] words = new Word[organizedTokens.size()-1];
 
-            String message = "";
-            ArrayList<String> list = new ArrayList<String>();
-            ReadFile rf = new ReadFile(new File("LoanwordEntries.csv"));
-            list = rf.getTokens();
-            for (String str : list) {
-                message += str;
+            // put into words
+            for(int i = 0; i < words.length; i++) {
+                String[] ot = organizedTokens.get(i+1);
+                words[i] = new Word(ot[0], ot[1], ot[2], ot[3], ot[4], ot[5], ot[6], ot[7], ot[8], ot[9], ot[10], ot[11]);
             }
-            ta.setText(message);
 
+            // JList config
+            String[] hanziStrings = new String[words.length];
+            for(int i = 0; i < hanziStrings.length; i++) {
+                hanziStrings[i] = words[i].getHanzi();
+            }
+            
+            queryList = new JList<String>(hanziStrings);
+            queryList.setPreferredSize(new Dimension(600, 600));
+
+            centerPanel.add(queryList);
+
+        }
+    }
+
+    class WordPanel extends JPanel {
+        private JPanel topPanel;
+        private JTextField hanziField;
+        private JTextField meaningField;
+
+        private JPanel centerPanel;
+        private JTextArea descriptionArea;
+
+        private JPanel bottomPanel;
+
+        public WordPanel() {
+            this.setLayout(new BorderLayout());
+
+            // topPanel
+            topPanel = new JPanel();
+            topPanel.setLayout(new FlowLayout());
+
+            hanziField = new JTextField();
+
+            meaningField = new JTextField();
+
+            topPanel.add(hanziField);
+            topPanel.add(meaningField);
+
+            // centerPanel
+            centerPanel = new JPanel();
+
+            descriptionArea = new JTextArea();
+
+            centerPanel.add(descriptionArea);
+
+            // bottomPanel
+            bottomPanel = new JPanel();
+            bottomPanel.setLayout(new FlowLayout());
+
+            this.add(topPanel, BorderLayout.NORTH);
+            this.add(centerPanel, BorderLayout.CENTER);
+            this.add(bottomPanel, BorderLayout.SOUTH);
         }
     }
 
