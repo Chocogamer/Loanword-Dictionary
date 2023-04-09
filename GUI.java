@@ -8,6 +8,8 @@ import javax.swing.event.ListSelectionListener;
 public class GUI implements ActionListener, ListSelectionListener {
 
     // Private Fields
+    private Word[] words;
+
     private final Color BLUETHEME = new Color(25, 230, 175);
     private JFrame frame;
     private Container frameContainer;
@@ -24,6 +26,20 @@ public class GUI implements ActionListener, ListSelectionListener {
 
     // Default Constructor
     public GUI() {
+        // organized List of tokens
+        ReadFile rf = new ReadFile("LoanwordEntries.csv");
+        ArrayList<String[]> organizedTokens = new ArrayList<String[]>();
+        organizedTokens = rf.getTokens();
+
+        // words
+        words = new Word[organizedTokens.size()-1];
+
+        // put into words
+        for(int i = 0; i < words.length; i++) {
+            String[] ot = organizedTokens.get(i+1);
+            words[i] = new Word(ot[0], ot[1], ot[2], ot[3], ot[4], ot[5], ot[6], ot[7], ot[8], ot[9], ot[10], ot[11]);
+        }
+
         frame = new JFrame("Loanword Dictionary");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 1000);
@@ -62,7 +78,8 @@ public class GUI implements ActionListener, ListSelectionListener {
         homePanel.queryList.addListSelectionListener(this);
 
         // word panel
-        wordPanel = new WordPanel();
+
+        wordPanel = new WordPanel(words[0]);
         wordPanel.setName("wordPanel");
         frameContainer.add(wordPanel, "wordPanel");
 
@@ -85,8 +102,12 @@ public class GUI implements ActionListener, ListSelectionListener {
 
     // ListSelectionListener
     public void valueChanged(ListSelectionEvent event) {
-        Object e = event.getSource();
-        System.out.println(homePanel.queryList.getSelectedValue());
+        //Object e = event.getSource();
+        // System.out.println("First: " + event.getFirstIndex());
+        // System.out.println("Last: " + event.getLastIndex());
+        wordPanel.setWord(words[event.getLastIndex()]);
+        cardLayout.show(frameContainer, "wordPanel");
+        //System.out.println(homePanel.queryList.getSelectedValue());
     }
 
     // StartJPanel Class
@@ -164,19 +185,19 @@ public class GUI implements ActionListener, ListSelectionListener {
             centerPanel.setBackground(BLUETHEME);
             this.add(centerPanel, BorderLayout.CENTER);
 
-            // organized List of tokens
-            ReadFile rf = new ReadFile("LoanwordEntries.csv");
-            ArrayList<String[]> organizedTokens = new ArrayList<String[]>();
-            organizedTokens = rf.getTokens();
+            // // organized List of tokens
+            // ReadFile rf = new ReadFile("LoanwordEntries.csv");
+            // ArrayList<String[]> organizedTokens = new ArrayList<String[]>();
+            // organizedTokens = rf.getTokens();
 
-            // words
-            Word[] words = new Word[organizedTokens.size()-1];
+            // // words
+            // Word[] words = new Word[organizedTokens.size()-1];
 
-            // put into words
-            for(int i = 0; i < words.length; i++) {
-                String[] ot = organizedTokens.get(i+1);
-                words[i] = new Word(ot[0], ot[1], ot[2], ot[3], ot[4], ot[5], ot[6], ot[7], ot[8], ot[9], ot[10], ot[11]);
-            }
+            // // put into words
+            // for(int i = 0; i < words.length; i++) {
+            //     String[] ot = organizedTokens.get(i+1);
+            //     words[i] = new Word(ot[0], ot[1], ot[2], ot[3], ot[4], ot[5], ot[6], ot[7], ot[8], ot[9], ot[10], ot[11]);
+            // }
 
             // JList config
             String[] hanziStrings = new String[words.length];
@@ -193,33 +214,49 @@ public class GUI implements ActionListener, ListSelectionListener {
     }
 
     class WordPanel extends JPanel {
-        private JPanel topPanel;
-        private JTextField hanziField;
-        private JTextField meaningField;
+        Word word;
 
-        private JPanel centerPanel;
-        private JTextArea descriptionArea;
+        JPanel topPanel;
+        JTextField hanziField;
+        JTextField meaningField;
 
-        private JPanel bottomPanel;
+        JPanel centerPanel;
+        JTextArea descriptionArea;
 
-        public WordPanel() {
+        JPanel bottomPanel;
+
+        WordPanel(Word word) {
+            this.word = word;
+
+            this.setBackground(BLUETHEME);
             this.setLayout(new BorderLayout());
 
             // topPanel
             topPanel = new JPanel();
+            topPanel.setBackground(BLUETHEME);
             topPanel.setLayout(new FlowLayout());
 
             hanziField = new JTextField();
+            hanziField.setEditable(false);
+            hanziField.setText(word.getHanzi());
+            hanziField.setPreferredSize(new Dimension(200, 50));
 
             meaningField = new JTextField();
+            meaningField.setEditable(false);
+            meaningField.setText(word.getMeaning());
+            meaningField.setPreferredSize(new Dimension(200, 50));
 
             topPanel.add(hanziField);
             topPanel.add(meaningField);
 
             // centerPanel
             centerPanel = new JPanel();
+            centerPanel.setBackground(BLUETHEME);
 
             descriptionArea = new JTextArea();
+            descriptionArea.setEditable(false);
+            descriptionArea.setPreferredSize(new Dimension(400, 400));
+            descriptionArea.setText(word.toString());
 
             centerPanel.add(descriptionArea);
 
@@ -230,6 +267,13 @@ public class GUI implements ActionListener, ListSelectionListener {
             this.add(topPanel, BorderLayout.NORTH);
             this.add(centerPanel, BorderLayout.CENTER);
             this.add(bottomPanel, BorderLayout.SOUTH);
+        }
+
+        void setWord(Word word) {
+            this.word = word;
+            hanziField.setText(word.getHanzi());
+            meaningField.setText(word.getMeaning());
+            descriptionArea.setText(word.toString());
         }
     }
 

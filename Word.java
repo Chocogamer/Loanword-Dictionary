@@ -7,6 +7,21 @@ public class Word {
     private String vietnamese, vietnameseRom;
     private String japanese, japaneseRom;
 
+    public Word() {
+        hanzi = "";
+        meaning = "";
+        cantonese = "";
+        cantoneseRom = "";
+        mandarin = "";
+        mandarinRom = "";
+        minnan = "";
+        minnanRom = "";
+        vietnamese = "";
+        vietnameseRom = "";
+        japanese = "";
+        japaneseRom = "";
+    }
+
     public Word(String hanzi, String meaning, String cantonese, String cantoneseRom, String mandarin, String mandarinRom, String minnan, String minnanRom, String vietnamese, String vietnameseRom, String japanese, String japaneseRom) {
         this.hanzi = hanzi;
         this.meaning = meaning;
